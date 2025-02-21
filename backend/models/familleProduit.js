@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-require('../models/User'); 
+// Require the User model to ensure it's registered
+require('./User'); // Adjust the path based on where user.js is located
 
 const familleProduitSchema = new Schema({
   nom: { type: String, required: true, unique: true }, // Nom de la famille

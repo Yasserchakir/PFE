@@ -1,57 +1,85 @@
-const FamilleProduit = require('../models/FamilleProduit');
+const FamilleProduit = require("../models/FamilleProduit") // Ensure correct model path
 
-// **Créer une nouvelle famille de produit**
-exports.createFamille = async (req, res) => {
-    try {
-        const { nom, description, createdBy } = req.body;
-        const newFamille = new FamilleProduit({ nom, description, createdBy });
-        await newFamille.save();
-        res.status(201).json(newFamille);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+// Get all FamilleProduits
+exports.getAllFamilleProduits = async (req, res) => {
+  try {
+    const familleProduits = await FamilleProduit.find();
+    res.status(200).json(familleProduits);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error, please try again." });
+  }
 };
 
-// **Récupérer toutes les familles de produits**
-exports.getAllFamilles = async (req, res) => {
-    try {
-        const familles = await FamilleProduit.find().populate('createdBy', 'name email');
-        res.status(200).json(familles);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+// Get a single FamilleProduit by ID
+exports.getFamilleProduitById = async (req, res) => {
+  try {
+    const familleProduit = await FamilleProduit.findById(req.params.id);
+    if (!familleProduit) {
+      return res.status(404).json({ message: "FamilleProduit not found" });
     }
+    res.status(200).json(familleProduit);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error, please try again." });
+  }
 };
 
-// **Récupérer une famille de produit par ID**
-exports.getFamilleById = async (req, res) => {
-    try {
-        const famille = await FamilleProduit.findById(req.params.id).populate('createdBy', 'name email');
-        if (!famille) return res.status(404).json({ message: 'Famille non trouvée' });
-        res.status(200).json(famille);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+// Create a new FamilleProduit
+exports.createFamilleProduit = async (req, res) => {
+  try {
+    console.log('Request body:', req.body); // Log the incoming request body
+    const { nom, description, createdBy } = req.body;
+
+    if (!nom || !description || !createdBy) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
+
+    const newFamilleProduit = new FamilleProduit({
+      nom,
+      description,
+      createdBy
+    });
+
+    await newFamilleProduit.save();
+    res.status(201).json(newFamilleProduit);
+  } catch (error) {
+    console.error('Error occurred:', error);
+    res.status(500).json({ message: "Server error, please try again." });
+  }
 };
 
-// **Mettre à jour une famille de produit**
-exports.updateFamille = async (req, res) => {
-    try {
-        const { nom, description } = req.body;
-        const famille = await FamilleProduit.findByIdAndUpdate(req.params.id, { nom, description }, { new: true });
-        if (!famille) return res.status(404).json({ message: 'Famille non trouvée' });
-        res.status(200).json(famille);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+
+
+// Update an existing FamilleProduit by ID
+exports.updateFamilleProduit = async (req, res) => {
+  try {
+    const { name, description } = req.body; // Assuming these are the fields
+    const familleProduit = await FamilleProduit.findByIdAndUpdate(
+      req.params.id,
+      { name, description },
+      { new: true }
+    );
+    if (!familleProduit) {
+      return res.status(404).json({ message: "FamilleProduit not found" });
     }
+    res.status(200).json(familleProduit);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error, please try again." });
+  }
 };
 
-// **Supprimer une famille de produit**
-exports.deleteFamille = async (req, res) => {
-    try {
-        const famille = await FamilleProduit.findByIdAndDelete(req.params.id);
-        if (!famille) return res.status(404).json({ message: 'Famille non trouvée' });
-        res.status(200).json({ message: 'Famille supprimée avec succès' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+// Delete a FamilleProduit by ID
+exports.deleteFamilleProduit = async (req, res) => {
+  try {
+    const familleProduit = await FamilleProduit.findByIdAndDelete(req.params.id);
+    if (!familleProduit) {
+      return res.status(404).json({ message: "FamilleProduit not found" });
     }
+    res.status(200).json({ message: "FamilleProduit deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error, please try again." });
+  }
 };

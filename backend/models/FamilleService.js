@@ -1,17 +1,10 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-// Schéma pour la famille de service
-const familleServiceSchema = new Schema({
-  nom: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  description: {
-    type: String
-  }
-}, { timestamps: true });
+const familleServiceSchema = new mongoose.Schema({
+  nom: { type: String, required: true },
+  description: { type: String, required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },  // Reference to User model
+});
 
 const FamilleService = mongoose.model('FamilleService', familleServiceSchema);
 
